@@ -60,3 +60,24 @@ body {
 button{
   cursor: pointer;
 }
+
+
+.loader {
+    width: 60px;
+    aspect-ratio: 1;
+    border: 8px solid #0000;
+    box-sizing: border-box;
+    background: 
+      radial-gradient(farthest-side, #280905 98%, #0000) 0    0/15px 15px,
+      radial-gradient(farthest-side, #280905 98%, #0000) 100% 0/15px 15px,
+      radial-gradient(farthest-side, #280905 98%, #0000) 100% 100%/15px 15px,
+      radial-gradient(farthest-side, #280905 98%, #0000) 0    100%/15px 15px,
+      linear-gradient(#280905 0 0) 50%/30px 30px,
+      #FFFDF1;
+    background-repeat: no-repeat;
+    filter: blur(4px) contrast(10);
+    animation: l12 0.8s infinite;
+  }
+@keyframes l12 {
+  100%  {background-position:100% 0,100% 100%,0 100%,0 0,center}
+}

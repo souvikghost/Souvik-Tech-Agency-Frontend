@@ -1,25 +1,12 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getAPI } from "../../lib/api";
+import StatusBadge from "../../components/StatusBadge";
+import { formatDate } from "../../utils/constants";
 
-// --- Static Data ---
-const myRequests = [
-  { id: 1, service: "Web Development",  note: "Need a full e-commerce website.",      status: "pending",  date: "21 Feb 2026", icon: "🌐" },
-  { id: 2, service: "SEO Optimization", note: "Want to rank on first page of Google.", status: "approved", date: "18 Feb 2026", icon: "📈" },
-  { id: 3, service: "UI/UX Design",     note: "Redesign our existing dashboard.",      status: "rejected", date: "15 Feb 2026", icon: "🎨" },
-  { id: 4, service: "Mobile App",       note: "iOS app for our retail business.",      status: "pending",  date: "10 Feb 2026", icon: "📱" },
-];
+const getMyRequests = () => getAPI("/services/requests");
 
-// --- Status styles ---
-const statusStyles = {
-  pending:  "bg-yellow-100 text-yellow-700",
-  approved: "bg-emerald-100 text-emerald-700",
-  rejected: "bg-red-100 text-red-600",
-};
-
-const StatusBadge = ({ status }) => (
-  <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${statusStyles[status]}`}>
-    {status}
-  </span>
-);
+const icons = ["🌐", "📈", "🎨", "📱", "☁️", "✦", "🛠", "📦"];
 
 // --- Filter Toggle ---
 const filters = ["all", "pending", "approved", "rejected"];
@@ -36,18 +23,20 @@ const FilterToggle = ({ active, onChange }) => (
 );
 
 // --- Request Card ---
-const RequestCard = ({ request }) => (
+const RequestCard = ({ request, index }) => (
   <div className="bg-white border border-primary/8 rounded-2xl p-5 flex items-start gap-4">
     <div className="w-10 h-10 rounded-lg bg-primary/6 flex items-center justify-center text-xl shrink-0">
-      {request.icon}
+      {icons[index % icons.length]}
     </div>
     <div className="flex-1 min-w-0">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <h4 className="text-primary font-bold text-sm">{request.service}</h4>
+        <h4 className="text-primary font-bold text-sm">{request.service?.name || "Service"}</h4>
         <StatusBadge status={request.status} />
       </div>
-      <p className="text-primary/50 text-xs mt-1 leading-relaxed">"{request.note}"</p>
-      <p className="text-primary/30 text-[10px] mt-2">{request.date}</p>
+      {request.note && (
+        <p className="text-primary/60 text-sm mt-1 leading-relaxed">"{request.note}"</p>
+      )}
+      <p className="text-primary/30 text-xs mt-2">{formatDate(request.createdAt)}</p>
     </div>
   </div>
 );
@@ -56,7 +45,25 @@ const RequestCard = ({ request }) => (
 const SubmittedProjectRequest = () => {
   const [filter, setFilter] = useState("all");
 
-  const filtered = myRequests.filter((r) => filter === "all" || r.status === filter);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["myRequests"],
+    queryFn: getMyRequests,
+  });
+
+  const requests = data?.requests || data || [];
+  const filtered = requests.filter((r) => filter === "all" || r.status === filter);
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-40">
+      <p className="text-primary/30 text-sm">Loading requests...</p>
+    </div>
+  );
+
+  if (isError) return (
+    <div className="flex items-center justify-center h-40">
+      <p className="text-red-400 text-sm">Failed to load requests.</p>
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -75,8 +82,8 @@ const SubmittedProjectRequest = () => {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {filtered.map((request) => (
-            <RequestCard key={request.id} request={request} />
+          {filtered.map((request, index) => (
+            <RequestCard key={request._id} request={request} index={index} />
           ))}
         </div>
       )}

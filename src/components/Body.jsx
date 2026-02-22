@@ -13,33 +13,33 @@ import ApprovedProjects from "./forClient/ApprovedProjects";
 import SubmittedProjectRequest from "./forClient/SubmittedProjectRequest";
 
 const router = createBrowserRouter([
-  // {
-  //   path: "/admin",
-  //   element: (
-  //       <AppLayout role={"admin"}/>
-  //   ),
-  //   children: [
-  //     { index: true, element: <Navigate to="dashboard" /> },
-  //     { path: "dashboard", element: <AdminDashboard /> },
-  //     { path: "users", element: <AllUsers/> },
-  //     { path: "services", element: <Services/> },
-  //     { path: "requests", element: <ServiceRequest/> },
-  //     { path: "projects", element: <RunningProjects/> },
-  //     { path: "profile", element: <OwnProfile/> },
-  //   ],
-  // },
-  // {
-  //   path: "/employee",
-  //   element: <AppLayout role={"employee"} />,
-  //   children: [
-  //     { index: true, element: <Navigate to="projects" /> },
-  //     { path: "projects", element: <RunningProjectsForEmployee /> },
-  //     { path: "profile", element: <OwnProfile role="employee" />, handle: { title: "Profile" } },
-  //   ],
-  // },
+  {
+    path: "/admin",
+    element: (
+        <AppLayout />
+    ),
+    children: [
+      { index: true, element: <Navigate to="dashboard" /> },
+      { path: "dashboard", element: <AdminDashboard /> },
+      { path: "users", element: <AllUsers/> },
+      { path: "services", element: <Services/> },
+      { path: "requests", element: <ServiceRequest/> },
+      { path: "projects", element: <RunningProjects/> },
+      { path: "profile", element: <OwnProfile/> },
+    ],
+  },
+  {
+    path: "/employee",
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <Navigate to="projects" /> },
+      { path: "projects", element: <RunningProjectsForEmployee /> },
+      { path: "profile", element: <OwnProfile role="employee" />, handle: { title: "Profile" } },
+    ],
+  },
   {
     path: "/client",
-    element: <AppLayout role={"client"} />,
+    element: <AppLayout />,
     children: [
       { index: true, element: <Navigate to="services" /> },
       { path: "services", element: <ListedServices /> },
