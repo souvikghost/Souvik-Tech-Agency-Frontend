@@ -12,7 +12,7 @@ import ListedServices from "./forClient/ListedServices";
 import ApprovedProjects from "./forClient/ApprovedProjects";
 import SubmittedProjectRequest from "./forClient/SubmittedProjectRequest";
 import Messages from "./Messages";
-import { ProtectedRoute, PublicRoute } from "./Protectedroute";
+import { ProtectedRoute, PublicRoute } from "./ProtectedRoute";
 
 const router = createBrowserRouter([
   {
