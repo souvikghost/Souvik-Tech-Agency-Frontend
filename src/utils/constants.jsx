@@ -29,3 +29,21 @@ export const cardStyles = [
 ];
 
 export const icons = ["🌐", "📈", "🎨", "📱", "☁️", "✦", "🛠", "📦"];
+
+// --- Time formatter ---
+export const timeAgo = (iso) => {
+  const date = new Date(iso);
+  const now = new Date();
+  const diff = Math.floor((now - date) / 1000 / 60);
+  if (diff < 1) return "just now";
+  if (diff < 60) return `${diff}m ago`;
+  if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+};
+
+// --- Role badge colors ---
+export const roleBadge = {
+  admin:    "bg-purple-100 text-purple-600",
+  employee: "bg-blue-100 text-blue-600",
+  client:   "bg-amber-100 text-amber-600",
+};

@@ -60,17 +60,21 @@ const title = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
             </NavLink>
           ))}
         </nav>
-
-        {/* User */}
-        <div className="px-4 py-4 border-t border-white/10">
-          <button onClick={() => navigate(`/${role}/profile`)} className="w-full flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold shrink-0">{user?.name ? getInitials(user.name) : "?"}</div>
-            <div className="text-left overflow-hidden">
-              <p className="text-white text-sm font-semibold truncate">{user?.name || "—"}</p>
-              <p className="text-white/40 text-xs font-semibold capitalize">{role}</p>
-            </div>
-          </button>
-        </div>
+       {/* User */}
+<div className="px-4 py-4 border-t border-white/10">
+  <button onClick={() => navigate(`/${role}/profile`)} className="w-full flex items-center gap-3">
+    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
+      {user?.avatar
+        ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+        : user?.name ? getInitials(user.name) : "?"
+      }
+    </div>
+    <div className="text-left overflow-hidden">
+      <p className="text-white text-sm font-semibold truncate">{user?.name || "—"}</p>
+      <p className="text-white/40 text-xs font-semibold capitalize">{role}</p>
+    </div>
+  </button>
+</div>
       </aside>
 
       {/* Main content */}

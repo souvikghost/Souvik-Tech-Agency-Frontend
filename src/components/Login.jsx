@@ -13,9 +13,7 @@ const roleRedirect = {
 };
 
 const demoCredentials = [
-  { role: "Admin",    email: "admin@souviktechagency.com",    password: "admin123" },
-  { role: "Employee", email: "employee@souviktechagency.com", password: "employee123" },
-  { role: "Client",   email: "client@souviktechagency.com",   password: "client123" },
+  { role: "Admin",    email: "admin@souviktechagency.com",    password: "abcd" },
 ];
 
 const HelpButton = () => {
@@ -40,15 +38,15 @@ const HelpButton = () => {
           <div className="space-y-3">
             {demoCredentials.map((c) => (
               <div key={c.role} className="bg-primary/4 rounded-xl px-3 py-2.5 space-y-1">
-                <p className="text-primary text-xs font-bold">{c.role}</p>
-                <p className="text-primary/50 text-[11px] select-all cursor-text break-all">{c.email}</p>
-                <p className="text-primary/50 text-[11px]">
-                  Password: <span className="font-semibold text-primary select-all cursor-text">{c.password}</span>
+                <p className="text-primary text-sm font-bold">{c.role}</p>
+                <p className="text-primary/50 text-xs font-semibold select-all cursor-text break-all">{c.email}</p>
+                <p className="text-primary/50 text-xs">
+                  Password: <span className="font-semibold text-primary/50 select-all cursor-text">{c.password}</span>
                 </p>
               </div>
             ))}
           </div>
-          <p className="text-primary/30 text-[10px] mt-3 text-center">Click on text to select &amp; copy</p>
+          <p className="text-primary/60 text-[10px] mt-3 text-center">Click on text to select &amp; copy</p>
         </div>
       )}
 
@@ -59,7 +57,7 @@ const HelpButton = () => {
         className="flex items-center gap-2 px-4 py-2 bg-primary text-secondary text-xs font-semibold rounded-full shadow-lg hover:bg-primary/90 transition"
       >
         <span className="w-4 h-4 rounded-full border border-secondary/50 flex items-center justify-center text-[10px] font-bold">i</span>
-        Demo Login
+        Help
       </button>
     </div>
   );

@@ -11,6 +11,7 @@ import RunningProjectsForEmployee from "./forEmployee/RunningProjectsForEmployee
 import ListedServices from "./forClient/ListedServices";
 import ApprovedProjects from "./forClient/ApprovedProjects";
 import SubmittedProjectRequest from "./forClient/SubmittedProjectRequest";
+import Messages from "./Messages";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       { path: "requests", element: <ServiceRequest/> },
       { path: "projects", element: <RunningProjects/> },
       { path: "profile", element: <OwnProfile/> },
+      { path: "messages", element: <Messages/> },
     ],
   },
   {
@@ -34,6 +36,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="projects" /> },
       { path: "projects", element: <RunningProjectsForEmployee /> },
+      { path: "messages", element: <Messages /> },
       { path: "profile", element: <OwnProfile role="employee" />, handle: { title: "Profile" } },
     ],
   },
@@ -43,6 +46,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="services" /> },
       { path: "services", element: <ListedServices /> },
+      { path: "messages", element: <Messages /> },
       { path: "requests", element: <SubmittedProjectRequest /> },
       { path: "projects", element: <ApprovedProjects /> },
       { path: "profile", element: <OwnProfile role="client" />, handle: { title: "Profile" } },
@@ -51,7 +55,7 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
-  },
+  }
 ]);
 
 export default function Body() {
