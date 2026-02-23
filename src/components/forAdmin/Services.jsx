@@ -18,27 +18,44 @@ const cardStyles = [
 // --- Service Card ---
 const ServiceCard = ({ service, index, onDelete }) => {
   const style = cardStyles[index % cardStyles.length];
+
   return (
-    <div className={`bg-gradient-to-br ${style.accent} border ${style.border} rounded-2xl p-5 flex flex-col gap-3 min-h-[180px]`}>
-<div className="flex-1">
-  <h4 className="text-primary font-bold text-base">{service.name}</h4>
-  <p className="text-primary/60 text-sm mt-1 leading-relaxed">{service.description}</p>
-</div>
+    <div className={`bg-gradient-to-br ${style.accent} border ${style.border} rounded-2xl p-5 flex flex-col gap-4`}>
 
-<p className="text-primary/30  italic text-xs">Added {formatDate(service.createdAt)}</p>
+      {/* Top — name + price badge */}
+      <div className="flex items-start justify-between gap-3">
+        <h4 className="text-primary font-bold text-base leading-snug">{service.name}</h4>
+        <div className="shrink-0 bg-white/70 border border-primary/10 rounded-xl px-3 py-1.5 text-right">
+          <p className="text-primary/40 text-[9px] font-semibold uppercase tracking-widest leading-none">From</p>
+          <p className="text-primary font-bold font-mono text-sm leading-tight tracking-tighter mt-0.5">${service.price?.toLocaleString()}</p>
+        </div>
+      </div>
 
-      <button onClick={() => onDelete(service)}
-        className="w-full text-xs py-1.5 rounded-lg border border-red-200 text-red-500 font-semibold hover:bg-red-500 hover:text-white transition">
-        Delete
-      </button>
+      {/* Description */}
+      <p className="text-primary/60 text-sm leading-relaxed flex-1">{service.description}</p>
+
+      {/* Footer */}
+      <div className="border-t border-primary/8 pt-3 flex items-center justify-between gap-3">
+        <p className="text-primary/30 font-mono text-[11px]">Added {formatDate(service.createdAt)}</p>
+        <button onClick={() => onDelete(service)}
+          className="text-xs px-3 py-1.5 rounded-lg border border-red-200 text-red-500 font-semibold hover:bg-red-500 hover:text-white transition shrink-0">
+          Delete
+        </button>
+      </div>
     </div>
   );
 };
 
 // --- Add Modal ---
 const ServiceModal = ({ onClose, onSave, isPending }) => {
-  const [form, setForm] = useState({ name: "", description: "" });
+  const [form, setForm] = useState({ name: "", description: "", price: "" });
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSave = () => {
+    if (!form.name.trim()) return;
+    if (!form.price || isNaN(form.price) || Number(form.price) < 0) return;
+    onSave({ ...form, price: Number(form.price) });
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
@@ -54,6 +71,16 @@ const ServiceModal = ({ onClose, onSave, isPending }) => {
               className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition" />
           </div>
           <div>
+            <label className="text-primary text-xs font-semibold block mb-1">
+              Starting Price <span className="text-red-400">*</span>
+            </label>
+            <div className="flex items-center border border-primary/15 rounded-lg bg-white overflow-hidden focus-within:border-primary/40 transition">
+              <span className="px-3 py-2 text-sm text-primary/50 font-semibold border-r border-primary/10 bg-primary/4 shrink-0">$</span>
+              <input name="price" type="number" min="0" value={form.price} onChange={handleChange} placeholder="2999"
+                className="flex-1 px-3 py-2 text-sm text-primary placeholder:text-primary/30 focus:outline-none bg-transparent" />
+            </div>
+          </div>
+          <div>
             <label className="text-primary text-xs font-semibold block mb-1">Description</label>
             <textarea name="description" value={form.description} onChange={handleChange} rows={3} placeholder="Brief description..."
               className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition resize-none" />
@@ -61,7 +88,7 @@ const ServiceModal = ({ onClose, onSave, isPending }) => {
         </div>
         <div className="px-6 py-4 border-t border-primary/8 flex justify-end gap-2">
           <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-primary/60 hover:text-primary transition">Cancel</button>
-          <button onClick={() => { if (!form.name.trim()) return; onSave(form); }} disabled={isPending}
+          <button onClick={handleSave} disabled={isPending}
             className="px-4 py-2 text-sm font-semibold bg-primary text-secondary rounded-lg transition disabled:opacity-50">
             {isPending ? "Saving..." : "Save"}
           </button>
@@ -120,11 +147,9 @@ const Services = () => {
           <h2 className="text-primary font-display text-2xl font-bold">Services</h2>
           <p className="text-primary/60 text-sm mt-1">Manage services your company offers</p>
         </div>
-       
         <button onClick={() => setShowAdd(true)}
           className="px-4 py-2 bg-primary flex justify-center items-center gap-1 text-secondary text-sm font-semibold rounded-lg transition">
-          {svgPacket["plusIcon"]}
-           Add Service
+          {svgPacket["plusIcon"]} Add Service
         </button>
       </div>
 
@@ -140,9 +165,7 @@ const Services = () => {
         </div>
       )}
 
-      {showAdd && (
-        <ServiceModal isPending={addPending} onClose={() => setShowAdd(false)} onSave={addService} />
-      )}
+      {showAdd && <ServiceModal isPending={addPending} onClose={() => setShowAdd(false)} onSave={addService} />}
 
       {deleteTarget && (
         <ConfirmDeleteModal

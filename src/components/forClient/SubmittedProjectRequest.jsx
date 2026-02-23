@@ -6,7 +6,6 @@ import { formatDate } from "../../utils/constants";
 
 const getMyRequests = () => getAPI("/services/requests");
 
-const icons = ["🌐", "📈", "🎨", "📱", "☁️", "✦", "🛠", "📦"];
 
 // --- Filter Toggle ---
 const filters = ["all", "pending", "approved", "rejected"];
@@ -23,11 +22,9 @@ const FilterToggle = ({ active, onChange }) => (
 );
 
 // --- Request Card ---
-const RequestCard = ({ request, index }) => (
+const RequestCard = ({ request }) => (
   <div className="bg-white border border-primary/8 rounded-2xl p-5 flex items-start gap-4">
-    <div className="w-10 h-10 rounded-lg bg-primary/6 flex items-center justify-center text-xl shrink-0">
-      {icons[index % icons.length]}
-    </div>
+    
     <div className="flex-1 min-w-0">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <h4 className="text-primary font-bold text-sm">{request.service?.name || "Service"}</h4>
@@ -36,7 +33,7 @@ const RequestCard = ({ request, index }) => (
       {request.note && (
         <p className="text-primary/60 text-sm mt-1 leading-relaxed">"{request.note}"</p>
       )}
-      <p className="text-primary/30 text-xs mt-2">{formatDate(request.createdAt)}</p>
+      <p className="text-primary/30 tracking-tighter font-mono text-xs mt-2">{formatDate(request.createdAt)}</p>
     </div>
   </div>
 );

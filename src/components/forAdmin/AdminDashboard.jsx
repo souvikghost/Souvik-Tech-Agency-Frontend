@@ -67,7 +67,7 @@ const AdminDashboard = () => {
                   <td className="px-5 py-3 font-medium text-primary">{req.client?.name || "—"}</td>
                   <td className="px-5 py-3 text-primary/60">{req.service?.name || "—"}</td>
                   <td className="px-5 py-3"><StatusBadge status={req.status} /></td>
-                  <td className="px-5 py-3 text-primary/60">{formatDate(req.createdAt)}</td>
+                  <td className="px-5 py-3 text-primary/30 tracking-tighter font-mono text-xs">{formatDate(req.createdAt)}</td>
                 </tr>
               ))}
             </tbody>
@@ -96,7 +96,7 @@ const AdminDashboard = () => {
                   <td className="px-5 py-3 font-medium text-primary">{proj.name}</td>
                   <td className="px-5 py-3 text-primary/60">{proj.client?.name || "—"}</td>
                   <td className="px-5 py-3"><StatusBadge status={proj.status} /></td>
-                  <td className="px-5 py-3 text-primary/60">{formatDate(proj.createdAt)}</td>
+                  <td className="px-5 py-3 text-primary/30 tracking-tighter font-mono text-xs">{formatDate(proj.createdAt)}</td>
                 </tr>
               ))}
             </tbody>

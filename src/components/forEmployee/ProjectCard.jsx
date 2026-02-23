@@ -18,7 +18,7 @@ export const ProjectCard = ({ project, onUpdateStatus }) => (
     <div className="grid grid-cols-2 gap-2">
       <div className="bg-primary/4 rounded-lg px-3 py-2">
         <p className="text-primary/60 text-[10px] font-semibold uppercase tracking-widest">Started</p>
-        <p className="text-primary text-xs font-semibold mt-0.5">{formatDate(project.createdAt)}</p>
+        <p className="text-primary/30 tracking-tighter font-mono text-xs mt-0.5">{formatDate(project.createdAt)}</p>
       </div>
       <div className="bg-primary/4 rounded-lg px-3 py-2">
         <p className="text-primary/60 text-[10px] font-semibold uppercase tracking-widest">Company</p>

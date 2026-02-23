@@ -115,9 +115,9 @@ const MessageBubble = ({ message, myId }) => {
 // --- Empty State ---
 const EmptyState = () => (
   <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center p-8">
-    <div className="w-16 h-16 rounded-full bg-primary/6 flex items-center justify-center text-2xl">{svgPacket["selectChat"]}</div>
-    <p className="text-primary font-semibold text-sm">Select a conversation</p>
-    <p className="text-primary/60 text-xs">Choose a contact from the left to start messaging</p>
+    <div className="w-16 h-16 rounded-full bg-primary/6 flex items-center justify-center opacity-50 text-2xl">{svgPacket["selectChat"]}</div>
+    <p className="text-primary/50 font-semibold text-sm">Select a conversation</p>
+    <p className="text-primary/30 text-xs">Choose a contact from the left to start messaging</p>
   </div>
 );
 

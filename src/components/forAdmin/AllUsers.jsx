@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { svgPacket } from "../../utils/svgPacket";
-import { getEmployees, getClients, createUser, deleteUser } from "../../api/user";
+import { getEmployees, getClients, createUser, deleteUser, getDeletedUsers } from "../../api/user";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 import useToast from "../../hooks/useToast";
 
-// --- Reusable Table ---
+// --- Active User Table ---
 const UserTable = ({ data, columns, onDelete, isLoading, showCompany = false }) => (
   <div className="overflow-x-auto">
     <table className="w-full text-sm">
@@ -42,6 +42,50 @@ const UserTable = ({ data, columns, onDelete, isLoading, showCompany = false }) 
                 <button onClick={() => onDelete(row)} className="text-xs px-3 py-1 rounded-lg border border-red-200 text-red-500 hover:bg-red-500 hover:text-white transition font-semibold">
                   Delete
                 </button>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+);
+
+// --- Deleted User Table ---
+const DeletedUserTable = ({ data, isLoading }) => (
+  <div className="overflow-x-auto">
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-primary/8 text-xs uppercase tracking-wide text-primary/60">
+          <th className="px-5 py-3 text-left font-semibold">Name</th>
+          <th className="px-5 py-3 text-left font-semibold">Email</th>
+          <th className="px-5 py-3 text-left font-semibold">Role</th>
+          <th className="px-5 py-3 text-left font-semibold">Company</th>
+          <th className="px-5 py-3 text-left font-semibold">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {isLoading ? (
+          <tr>
+            <td colSpan={5} className="px-5 py-6 text-center text-primary/30 text-xs">
+              Loading...
+            </td>
+          </tr>
+        ) : data.length === 0 ? (
+          <tr>
+            <td colSpan={5} className="px-5 py-6 text-center text-primary/30 text-xs">
+              No deleted users.
+            </td>
+          </tr>
+        ) : (
+          data.map((row) => (
+            <tr key={row._id} className="border-b border-primary/5 last:border-0 opacity-50">
+              <td className="px-5 py-3 font-medium text-primary line-through">{row.name}</td>
+              <td className="px-5 py-3 text-primary/60">{row.email}</td>
+              <td className="px-5 py-3 text-primary/60 capitalize">{row.role}</td>
+              <td className="px-5 py-3 text-primary/60">{row.company || "—"}</td>
+              <td className="px-5 py-3">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-500">Deleted</span>
               </td>
             </tr>
           ))
@@ -99,15 +143,15 @@ const AddUserModal = ({ onClose, onSave, isPending }) => {
               <label className="text-primary text-xs font-semibold block mb-1">
                 Full Name <span className="text-red-400">*</span>
               </label>
-              <input name="name" value={form.name} onChange={handleChange} placeholder="John Doe" className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition" />
+              <input name="name" value={form.name} onChange={handleChange} placeholder="John Doe" className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm font-semibold placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition" />
             </div>
             <div className="col-span-2">
               <label className="text-primary text-xs font-semibold block mb-1">
                 Email <span className="text-red-400">*</span>
               </label>
               <div className="flex items-center border border-primary/15 rounded-lg bg-white overflow-hidden focus-within:border-primary/40 transition">
-                <input name="email" value={form.email} onChange={handleChange} placeholder="john" className="flex-1 min-w-0 px-3 py-2 text-sm text-primary placeholder:text-primary/30 focus:outline-none bg-transparent" />
-                <span className="px-3 py-2 text-xs text-primary/50 border-l border-primary/10 bg-primary/4 shrink-0 whitespace-nowrap">@souviktechagency.com</span>
+                <input name="email" value={form.email} onChange={handleChange} placeholder="john" className="flex-1 min-w-0 px-3 py-2 text-sm text-primary placeholder:text-primary/30 font-semibold focus:outline-none bg-transparent" />
+                <span className="px-3 py-2 text-xs text-primary/50 font-semibold border-l border-primary/10 bg-primary/4 shrink-0 whitespace-nowrap">@souviktechagency.com</span>
               </div>
             </div>
           </div>
@@ -116,13 +160,13 @@ const AddUserModal = ({ onClose, onSave, isPending }) => {
             <label className="text-primary text-xs font-semibold block mb-1">
               Password <span className="text-red-400">*</span>
             </label>
-            <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition" />
+            <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm font-semibold placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition" />
           </div>
 
           {role === "client" && (
             <div>
               <label className="text-primary text-xs font-semibold block mb-1">Company</label>
-              <input name="company" value={form.company} onChange={handleChange} placeholder="ABC Corp" className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition" />
+              <input name="company" value={form.company} onChange={handleChange} placeholder="ABC Corp" className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white font-semibold text-primary text-sm placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition" />
             </div>
           )}
         </div>
@@ -140,18 +184,35 @@ const AddUserModal = ({ onClose, onSave, isPending }) => {
   );
 };
 
+// --- Tab Toggle ---
+const TabToggle = ({ active, onChange }) => (
+  <div className="flex items-center bg-primary/6 ml-auto rounded-full p-1 gap-0.5">
+    {["active", "deleted"].map((t) => (
+      <button key={t} onClick={() => onChange(t)} className={`px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition ${active === t ? "bg-primary text-secondary shadow" : "text-primary/50 hover:text-primary"}`}>
+        {t}
+      </button>
+    ))}
+  </div>
+);
+
 // --- Main ---
 const AllUsers = () => {
   const { toast, ToastContainer } = useToast();
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [tab, setTab] = useState("active");
 
   const { data: empData, isLoading: empLoading } = useQuery({ queryKey: ["employees"], queryFn: getEmployees });
   const { data: cliData, isLoading: cliLoading } = useQuery({ queryKey: ["clients"], queryFn: getClients });
+  const { data: deletedData, isLoading: deletedLoading } = useQuery({
+    queryKey: ["deletedUsers"],
+    queryFn: getDeletedUsers,
+  });
 
   const employees = empData?.users || empData || [];
   const clients = cliData?.users || cliData || [];
+  const deletedUsers = deletedData?.users || deletedData || [];
 
   const { mutate: addUser, isPending: addPending } = useMutation({
     mutationFn: createUser,
@@ -169,6 +230,7 @@ const AllUsers = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(["employees"]);
       queryClient.invalidateQueries(["clients"]);
+      queryClient.invalidateQueries(["deletedUsers"]);
       toast("success", "User deleted successfully.");
       setDeleteTarget(null);
     },
@@ -178,41 +240,60 @@ const AllUsers = () => {
   return (
     <div className="space-y-4">
       <ToastContainer />
-
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-primary font-display text-2xl font-bold">Users</h2>
-          <p className="text-primary/60 text-sm mt-1">Manage employees and clients</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        {/* Row 1 — title + add button */}
+        <div className="flex items-center justify-between w-full">
+          <div>
+            <h2 className="text-primary font-display text-2xl font-bold">Users</h2>
+            <p className="text-primary/60 text-sm mt-1">Manage employees and clients</p>
+          </div>
+          {tab === "active" && (
+            <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-primary text-secondary flex justify-center items-center gap-1 text-sm font-semibold rounded-lg transition">
+              {svgPacket["plusIcon"]} Add User
+            </button>
+          )}
         </div>
-        <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-primary text-secondary flex justify-center items-center gap-1 text-sm font-semibold rounded-lg transition">
-          {svgPacket["plusIcon"]}
-          Add User
-        </button>
+
+        {/* Row 2 — tab toggle */}
+        <TabToggle active={tab} onChange={setTab} />
       </div>
 
-      {/* Employees */}
-      <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-primary/8">
-          <h3 className="text-primary font-semibold text-sm">
-            Employees <span className="text-primary/60">({employees.length})</span>
-          </h3>
-        </div>
-        <UserTable data={employees} columns={["Name", "Email"]} onDelete={setDeleteTarget} isLoading={empLoading} showCompany={false} />
-      </div>
+      {tab === "active" ? (
+        <>
+          {/* Employees */}
+          <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-primary/8">
+              <h3 className="text-primary font-semibold text-sm">
+                Employees <span className="text-primary/60">({employees.length})</span>
+              </h3>
+            </div>
+            <UserTable data={employees} columns={["Name", "Email"]} onDelete={setDeleteTarget} isLoading={empLoading} showCompany={false} />
+          </div>
 
-      {/* Clients */}
-      <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-primary/8">
-          <h3 className="text-primary font-semibold text-sm">
-            Clients <span className="text-primary/60">({clients.length})</span>
-          </h3>
+          {/* Clients */}
+          <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-primary/8">
+              <h3 className="text-primary font-semibold text-sm">
+                Clients <span className="text-primary/60">({clients.length})</span>
+              </h3>
+            </div>
+            <UserTable data={clients} columns={["Name", "Email", "Company"]} onDelete={setDeleteTarget} isLoading={cliLoading} showCompany={true} />
+          </div>
+        </>
+      ) : (
+        <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-primary/8">
+            <h3 className="text-primary font-semibold text-sm">
+              Deleted Users <span className="text-primary/60">({deletedUsers.length})</span>
+            </h3>
+          </div>
+          <DeletedUserTable data={deletedUsers} isLoading={deletedLoading} />
         </div>
-        <UserTable data={clients} columns={["Name", "Email", "Company"]} onDelete={setDeleteTarget} isLoading={cliLoading} showCompany={true} />
-      </div>
+      )}
 
       {showModal && <AddUserModal isPending={addPending} onClose={() => setShowModal(false)} onSave={addUser} />}
 
-      {deleteTarget && <ConfirmDeleteModal title="Delete User" description={`Are you sure you want to delete "${deleteTarget.name}"?`} onConfirm={() => removeUser(deleteTarget._id)} onClose={() => setDeleteTarget(null)} />}
+      {deleteTarget && <ConfirmDeleteModal title="Delete User" description={`Are you sure you want to delete "${deleteTarget.name}"? This is a soft delete — record will be preserved.`} onConfirm={() => removeUser(deleteTarget._id)} onClose={() => setDeleteTarget(null)} />}
     </div>
   );
 };

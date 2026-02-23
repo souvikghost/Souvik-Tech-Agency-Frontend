@@ -16,14 +16,14 @@ export const ProjectCardReadOnly = ({ project }) => (
     <div className="grid grid-cols-2 gap-2">
       <div className="bg-primary/4 rounded-lg px-3 py-2">
         <p className="text-primary/40 text-[10px] font-semibold uppercase tracking-widest">Started</p>
-        <p className="text-primary text-xs font-semibold mt-0.5">{formatDate(project.createdAt)}</p>
+        <p className="text-primary/30 tracking-tighter font-mono text-xs mt-0.5">{formatDate(project.createdAt)}</p>
       </div>
       {(project.status === "completed" || project.status === "stopped") && (
         <div className={`rounded-lg px-3 py-2 ${project.status === "completed" ? "bg-emerald-50" : "bg-red-50"}`}>
           <p className={`text-[10px] font-semibold uppercase tracking-widest ${project.status === "completed" ? "text-emerald-500" : "text-red-400"}`}>
             {project.status === "completed" ? "Completed" : "Stopped"}
           </p>
-          <p className={`text-xs font-semibold mt-0.5 ${project.status === "completed" ? "text-emerald-600" : "text-red-500"}`}>
+          <p className={`text-primary/30 tracking-tighter font-mono text-xs mt-0.5 ${project.status === "completed" ? "text-emerald-600" : "text-red-500"}`}>
             {formatDate(project.updatedAt)}
           </p>
         </div>
