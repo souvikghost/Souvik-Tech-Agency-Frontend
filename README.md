@@ -196,13 +196,13 @@ src/
 > Add screenshots here after deployment. Drag and drop images directly into this file on GitHub to upload them automatically.
 ## Admin View
 <img width="1710" height="986" alt="Login" src="https://github.com/user-attachments/assets/a311b96f-2f47-4e7e-ad88-6085c03d8bde" />
-<img width="1710" height="951" alt="Admin:Dashboard" src="https://github.com/user-attachments/assets/42b014d5-eeb5-44fd-b230-0214bffc8e57" />
+<img width="1710" height="951" alt="Screenshot 2026-02-24 at 8 47 48 PM" src="https://github.com/user-attachments/assets/a1ddb447-99d3-49d6-892b-7e429bfc8ebb" />
 <img width="1710" height="952" alt="Admin:Users" src="https://github.com/user-attachments/assets/0bbac896-a63b-427d-b4c9-82ccb64ca9d4" />
 <img width="1710" height="951" alt="Admin:Services" src="https://github.com/user-attachments/assets/8d3363c1-5de2-441b-8b0b-7e2583c0eea8" />
 <img width="1710" height="953" alt="Admin:Requests" src="https://github.com/user-attachments/assets/d93fe433-d9db-4782-9075-11df440c1507" />
 <img width="1710" height="952" alt="Admin:Requests:Approve" src="https://github.com/user-attachments/assets/081fe268-8855-4d45-8776-2b17bd17606a" />
-<img width="1710" height="950" alt="Admin:Requests:Reject" src="https://github.com/user-attachments/assets/28f63d3d-8082-4f05-a202-f0a3a085a048" />
-<img width="1710" height="953" alt="Admin:Projects" src="https://github.com/user-attachments/assets/dcf6260a-626d-468a-a56f-696373dce617" />
+<img width="1710" height="952" alt="image" src="https://github.com/user-attachments/assets/9c26bda4-b500-436a-8e8d-13a052b6a4c5" />
+<img width="1710" height="951" alt="image" src="https://github.com/user-attachments/assets/7aff4c9c-da26-4ff1-b584-dbd859f77156" />
 <img width="1710" height="952" alt="Admin:Projects:Assign" src="https://github.com/user-attachments/assets/c7595fa3-3616-47c4-9ffa-c1b84290c3b7" />
 <img width="1710" height="952" alt="Admin:Profile" src="https://github.com/user-attachments/assets/0a083935-93f0-4352-acbb-690dfa273c6e" />
 <img width="1710" height="950" alt="Admin:Messages History" src="https://github.com/user-attachments/assets/0a8615ab-2897-4b17-a129-17a903280106" />
@@ -214,7 +214,8 @@ src/
 ## Client View
 <img width="1710" height="951" alt="Client:Service:Request" src="https://github.com/user-attachments/assets/f9f6652c-acc0-4b0b-9d9a-c9f3ad9f0841" />
 <img width="1710" height="951" alt="Client:Requests" src="https://github.com/user-attachments/assets/cce6a4c1-fba9-4d43-8a81-c37c52c2ab85" />
-<img width="1710" height="950" alt="Client:Projects" src="https://github.com/user-attachments/assets/c3e4d52c-7260-436c-bf21-585651a6764f" />
+<img width="1710" height="952" alt="image" src="https://github.com/user-attachments/assets/5a5d80d2-eace-45fb-a1bb-b18962d43334" />
+
 
 
 
