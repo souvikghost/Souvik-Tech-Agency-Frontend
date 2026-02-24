@@ -103,7 +103,7 @@ const ServiceRequest = () => {
         <FilterToggle active={filter} onChange={setFilter} />
       </div>
 
-      <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
+      <div className="bg-primary/10 border border-primary/8 rounded-2xl overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-primary/8 text-xs uppercase tracking-wide text-primary/60">
@@ -124,7 +124,7 @@ const ServiceRequest = () => {
               </tr>
             ) : (
               filtered.map((req) => (
-                <tr key={req._id} className="border-b border-primary/5 last:border-0 hover:bg-primary/2 transition">
+                <tr key={req._id} className="border-b bg-secondary border-primary/5 last:border-0 hover:bg-primary/2 transition">
                   <td className="px-5 py-3 font-medium text-primary">
                     <span className={req?.client?.isDeleted ? "text-primary/40" : ""}>{req?.client?.name || "—"}</span>
                     {req?.client?.isDeleted && <span className="ml-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-400">deleted</span>}

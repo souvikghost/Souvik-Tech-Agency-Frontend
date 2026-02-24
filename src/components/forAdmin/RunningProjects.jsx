@@ -5,6 +5,7 @@ import { getEmployees } from "../../api/user";
 import StatusBadge from "../../components/StatusBadge";
 import { getInitials, formatDate } from "../../utils/constants";
 import useToast from "../../hooks/useToast";
+import { createPayment, getPaymentByProject, updatePayment, deletePayment } from "../../api/payment";
 
 // --- Filter Toggle ---
 const filters = ["all", "in-progress", "completed", "stopped"];
@@ -18,6 +19,115 @@ const FilterToggle = ({ active, onChange }) => (
     ))}
   </div>
 );
+
+// --- Payment Modal ---
+const PaymentModal = ({ project, onClose, onSave, onDelete, isPending }) => {
+  const { data: existingData } = useQuery({
+    queryKey: ["payment", project._id],
+    queryFn: () => getPaymentByProject(project._id),
+    retry: false,
+  });
+  const existing = existingData?._id ? existingData : null;
+
+
+  const [form, setForm] = useState({
+    amount: existing?.amount || "",
+    method: existing?.method || "bank_transfer",
+    status: existing?.status || "unpaid",
+    date: existing?.date ? new Date(existing.date).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+    notes: existing?.notes || "",
+  });
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSave = () => {
+    if (!form.amount || isNaN(form.amount)) return;
+    onSave({ existing, project, form });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div className="bg-secondary rounded-2xl w-full max-w-md shadow-xl">
+        <div className="px-6 py-4 border-b border-primary/8 flex items-center justify-between">
+          <div>
+            <h3 className="text-primary font-bold text-base">{existing ? "Update Payment" : "Add Payment"}</h3>
+            <p className="text-primary/50 text-xs mt-0.5">{project.name}</p>
+          </div>
+          <button onClick={onClose} className="text-primary/60 hover:text-primary transition text-xl leading-none">
+            ✕
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          {/* Amount */}
+          <div>
+            <label className="text-primary text-xs font-semibold block mb-1">
+              Amount <span className="text-red-400">*</span>
+            </label>
+            <div className="flex items-center border border-primary/15 rounded-lg bg-white overflow-hidden focus-within:border-primary/40 transition">
+              <span className="px-3 py-2 text-sm text-primary/50 font-semibold border-r border-primary/10 bg-primary/4 shrink-0">$</span>
+              <input name="amount" type="number" min="0" value={form.amount} onChange={handleChange} placeholder="2999" className="flex-1 px-3 py-2 text-sm text-primary placeholder:text-primary/30 focus:outline-none bg-transparent" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {/* Method */}
+            <div>
+              <label className="text-primary text-xs font-semibold block mb-1">Method</label>
+              <select name="method" value={form.method} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm focus:outline-none focus:border-primary/40 transition">
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="upi">UPI</option>
+                <option value="cheque">Cheque</option>
+                <option value="cash">Cash</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="text-primary text-xs font-semibold block mb-1">Status</label>
+              <select name="status" value={form.status} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm focus:outline-none focus:border-primary/40 transition">
+                <option value="unpaid">Unpaid</option>
+                <option value="partial">Partial</option>
+                <option value="paid">Paid</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Date */}
+          <div>
+            <label className="text-primary text-xs font-semibold block mb-1">Date</label>
+            <input name="date" type="date" value={form.date} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm focus:outline-none focus:border-primary/40 transition" />
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="text-primary text-xs font-semibold block mb-1">
+              Notes <span className="text-primary/40 font-normal">(optional)</span>
+            </label>
+            <textarea name="notes" value={form.notes} onChange={handleChange} rows={2} placeholder="Any additional info..." className="w-full px-3 py-2 rounded-lg border border-primary/15 bg-white text-primary text-sm placeholder:text-primary/30 focus:outline-none focus:border-primary/40 transition resize-none" />
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-primary/8 flex items-center justify-between gap-2">
+          {existing && (
+            <button onClick={() => onDelete(existing._id)} disabled={isPending} className="px-4 py-2 text-sm font-semibold text-red-500 border border-red-200 rounded-lg hover:bg-red-500 hover:text-white transition disabled:opacity-50">
+              Delete
+            </button>
+          )}
+          <div className="flex gap-2 ml-auto">
+            <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-primary/60 hover:text-primary transition">
+              Cancel
+            </button>
+            <button onClick={handleSave} disabled={isPending} className="px-4 py-2 text-sm font-semibold bg-primary text-secondary rounded-lg transition disabled:opacity-50">
+              {isPending ? "Saving..." : existing ? "Update" : "Save"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- Employee Detail Modal ---
 const EmployeeModal = ({ employee, project, onRemove, onClose, isPending }) => (
@@ -54,7 +164,6 @@ const EmployeeModal = ({ employee, project, onRemove, onClose, isPending }) => (
 const AssignModal = ({ project, allEmployees, onClose, onSave, isPending }) => {
   const currentIds = project.employees.map((e) => e._id);
   const [selected, setSelected] = useState(currentIds);
-
   const toggle = (id) => setSelected((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
 
   return (
@@ -66,7 +175,7 @@ const AssignModal = ({ project, allEmployees, onClose, onSave, isPending }) => {
             ✕
           </button>
         </div>
-        <div className="px-6 py-5 space-y-2 max-h-72 overflow-y-auto">
+        <div className="px-6 py-5 space-y-2 max-h-72 overflow-y-auto" id="style-4">
           {allEmployees.length === 0 ? (
             <p className="text-primary/30 text-sm text-center py-4">No employees found.</p>
           ) : (
@@ -160,68 +269,98 @@ const ConfirmStopModal = ({ project, onConfirm, onClose, isPending }) => (
   </div>
 );
 
+const paymentStatusStyle = {
+  paid: "bg-emerald-50 text-emerald-600 border border-emerald-200",
+  unpaid: "bg-red-50 text-red-500 border border-red-200",
+  partial: "bg-amber-50 text-amber-600 border border-amber-200",
+};
+
 // --- Project Card ---
-const ProjectCard = ({ project, onStop, onComplete, onSelectEmployee, onAssign }) => (
-  <div className="bg-white border border-primary/8 rounded-2xl p-5 flex flex-col gap-4">
-    <div className="flex items-start justify-between gap-2">
+const ProjectCard = ({ project, onStop, onComplete, onSelectEmployee, onAssign, onPayment }) => {
+  const { data: payment } = useQuery({
+    queryKey: ["payment", project._id],
+    queryFn: () => getPaymentByProject(project._id),
+    retry: false,
+  });
+
+const validPayment = payment?._id ? payment : null;  
+
+  return (
+    <div className="bg-white border border-primary/8 rounded-2xl p-5 flex flex-col gap-4">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <h4 className="text-primary font-bold text-sm">{project.name}</h4>
+          <div className="flex items-center gap-1 flex-wrap">
+            <p className={`text-xs mt-0.5 ${project.client?.isDeleted ? "text-primary/30" : "text-primary/40"}`}>{project.client?.name || "—"}</p>
+            {project.client?.isDeleted && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-400">deleted</span>}
+          </div>
+        </div>
+        <StatusBadge status={project.status} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-primary/4 rounded-lg px-3 py-2">
+          <p className="text-primary/40 text-[10px] font-semibold uppercase tracking-widest">Started</p>
+          <p className="text-primary/30 tracking-tighter font-mono text-xs mt-0.5">{formatDate(project.createdAt)}</p>
+        </div>
+        <div className="bg-primary/4 rounded-lg px-3 py-2">
+          <p className="text-primary/40 text-[10px] font-semibold uppercase tracking-widest">Company</p>
+          <p className="text-primary text-xs font-semibold mt-0.5">{project.client?.isDeleted ? "—" : project.client?.company || "—"}</p>
+        </div>
+      </div>
+
       <div>
-        <h4 className="text-primary font-bold text-sm">{project.name}</h4>
-        <div className="flex items-center gap-1 flex-wrap">
-          <p className={`text-xs mt-0.5 ${project.client?.isDeleted ? "text-primary/30" : "text-primary/40"}`}>{project.client?.name || "—"}</p>
-          {project.client?.isDeleted && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-400">deleted</span>}
+        <p className="text-primary/40 text-[10px] font-semibold uppercase tracking-widest mb-2">Assigned Team</p>
+        {project.employees?.length > 0 ? (
+          <div className="flex items-center -space-x-2">
+            {project.employees.map((emp) => (
+              <div key={emp._id} title={emp.name} onClick={() => onSelectEmployee(emp, project)} className="w-8 h-8 rounded-full bg-primary text-secondary text-xs font-bold flex items-center justify-center cursor-pointer ring-2 ring-white hover:ring-primary/40 hover:scale-110 transition-all">
+                {getInitials(emp.name)}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-primary/30 text-xs">No employees assigned</p>
+        )}
+      </div>
+
+      {/* Payment info if exists */}
+      {validPayment && (
+        <div className={`rounded-xl px-3 py-2 min-h-14 flex items-center justify-between gap-2 ${paymentStatusStyle[payment.status]}`}>
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest opacity-60">Payment</p>
+            <p className="text-sm font-bold mt-0.5">${payment.amount?.toLocaleString()}</p>
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-widest capitalize">{payment.status}</span>
         </div>
-      </div>
-      <StatusBadge status={project.status} />
-    </div>
-
-    <div className="grid grid-cols-2 gap-2">
-      <div className="bg-primary/4 rounded-lg px-3 py-2">
-        <p className="text-primary/40 text-[10px] font-semibold uppercase tracking-widest">Started</p>
-        <p className="text-primary/30 tracking-tighter font-mono text-xs mt-0.5">{formatDate(project.createdAt)}</p>
-      </div>
-      <div className="bg-primary/4 rounded-lg px-3 py-2">
-        <p className="text-primary/40 text-[10px] font-semibold uppercase tracking-widest">Company</p>
-        <p className="text-primary text-xs font-semibold mt-0.5">{project.client?.company || "—"}</p>
-      </div>
-    </div>
-
-    <div>
-      <p className="text-primary/40 text-[10px] font-semibold uppercase tracking-widest mb-2">Assigned Team</p>
-      {project.employees?.length > 0 ? (
-        <div className="flex items-center -space-x-2">
-          {project.employees.map((emp) => (
-            <div key={emp._id} title={emp.name} onClick={() => onSelectEmployee(emp, project)} className="w-8 h-8 rounded-full bg-primary text-secondary text-xs font-bold flex items-center justify-center cursor-pointer ring-2 ring-white hover:ring-primary/40 hover:scale-110 transition-all">
-              {getInitials(emp.name)}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-primary/30 text-xs">No employees assigned</p>
       )}
-    </div>
 
-    <div className="flex gap-2">
-      {project.status === "in-progress" && (
-        <>
-          <button onClick={() => onAssign(project)} className="flex-1 text-xs py-2 rounded-lg border border-primary/15 text-primary font-semibold hover:bg-primary hover:text-secondary transition">
-            Assign
-          </button>
-          <button onClick={() => onComplete(project)} className="flex-1 text-xs py-2 rounded-lg border border-emerald-200 text-emerald-600 hover:bg-emerald-500 hover:text-white font-semibold transition">
-            Complete
-          </button>
-          <button onClick={() => onStop(project)} className="flex-1 text-xs py-2 rounded-lg border border-red-200 text-red-500 hover:bg-red-500 hover:text-white font-semibold transition">
-            Stop
-          </button>
-        </>
-      )}
-      {project.status === "pending" && (
-        <button onClick={() => onAssign(project)} className="flex-1 text-xs py-2 rounded-lg border border-primary/15 text-primary font-semibold hover:bg-primary hover:text-secondary transition">
-          Assign
-        </button>
-      )}
+      <div className="flex mt-auto flex-wrap gap-2">
+  {project.status === "in-progress" && (
+    <>
+      <button onClick={() => onAssign(project)} className="flex-1 min-w-[80px] text-xs py-2 rounded-lg border border-primary/15 text-primary font-semibold hover:bg-primary hover:text-secondary transition">
+        Assign
+      </button>
+      <button onClick={() => onComplete(project)} className="flex-1 min-w-[80px] text-xs py-2 rounded-lg border border-emerald-200 text-emerald-600 hover:bg-emerald-500 hover:text-white font-semibold transition">
+        Complete
+      </button>
+      <button onClick={() => onStop(project)} className="flex-1 min-w-[80px] text-xs py-2 rounded-lg border border-red-200 text-red-500 hover:bg-red-500 hover:text-white font-semibold transition">
+        Stop
+      </button>
+    </>
+  )}
+  {project.status === "pending" && (
+    <button onClick={() => onAssign(project)} className="flex-1 min-w-[80px] text-xs py-2 rounded-lg border border-primary/15 text-primary font-semibold hover:bg-primary hover:text-secondary transition">
+      Assign
+    </button>
+  )}
+  <button onClick={() => onPayment(project)} className="flex-1 min-w-[80px] text-xs py-2 rounded-lg border border-amber-200 text-amber-600 hover:bg-amber-500 hover:text-white font-semibold transition">
+    {validPayment ? "Edit Payment" : "Add Payment"}
+  </button>
+</div>
     </div>
-  </div>
-);
+  );
+};
 
 // --- Main ---
 const RunningProjects = () => {
@@ -233,16 +372,10 @@ const RunningProjects = () => {
   const [completeTarget, setCompleteTarget] = useState(null);
   const [assignTarget, setAssignTarget] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [paymentTarget, setPaymentTarget] = useState(null);
 
-  const { data: projData, isLoading } = useQuery({
-    queryKey: ["allProjects"],
-    queryFn: getProjects,
-  });
-
-  const { data: empData } = useQuery({
-    queryKey: ["employees"],
-    queryFn: getEmployees,
-  });
+  const { data: projData, isLoading } = useQuery({ queryKey: ["allProjects"], queryFn: getProjects });
+  const { data: empData } = useQuery({ queryKey: ["employees"], queryFn: getEmployees });
 
   const { mutate: completeProject, isPending: completePending } = useMutation({
     mutationFn: (id) => updateProjectStatus(id, "completed"),
@@ -275,6 +408,33 @@ const RunningProjects = () => {
       setSelectedEmployee(null);
     },
     onError: (err) => toast("error", err.message || "Failed to update team."),
+  });
+
+  const { mutate: savePayment, isPending: paymentPending } = useMutation({
+    mutationFn: ({ existing, project, form }) => {
+      const body = { ...form, amount: Number(form.amount), project: project._id };
+      return existing ? updatePayment(existing._id, body) : createPayment(body);
+    },
+    onSuccess: (_, { project }) => {
+      queryClient.invalidateQueries(["payment", project._id]);
+      queryClient.invalidateQueries(["payments"]);
+      queryClient.invalidateQueries(["paymentStats"]);
+      toast("success", "Payment saved successfully.");
+      setPaymentTarget(null);
+    },
+    onError: (err) => toast("error", err.message || "Failed to save payment."),
+  });
+
+  const { mutate: removePayment, isPending: deletePending } = useMutation({
+    mutationFn: (id) => deletePayment(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["payment"]);
+      queryClient.invalidateQueries(["payments"]);
+      queryClient.invalidateQueries(["paymentStats"]);
+      toast("success", "Payment record deleted.");
+      setPaymentTarget(null);
+    },
+    onError: (err) => toast("error", err.message || "Failed to delete payment."),
   });
 
   const handleRemoveEmployee = (project, employee) => {
@@ -312,18 +472,16 @@ const RunningProjects = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((project) => (
-            <ProjectCard key={project._id} project={project} onStop={setStopTarget} onComplete={setCompleteTarget} onAssign={setAssignTarget} onSelectEmployee={(emp, proj) => setSelectedEmployee({ employee: emp, project: proj })} />
+            <ProjectCard key={project._id} project={project} onStop={setStopTarget} onComplete={setCompleteTarget} onAssign={setAssignTarget} onPayment={setPaymentTarget} onSelectEmployee={(emp, proj) => setSelectedEmployee({ employee: emp, project: proj })} />
           ))}
         </div>
       )}
 
       {selectedEmployee && <EmployeeModal employee={selectedEmployee.employee} project={selectedEmployee.project} isPending={assignPending} onRemove={handleRemoveEmployee} onClose={() => setSelectedEmployee(null)} />}
-
       {assignTarget && <AssignModal project={assignTarget} allEmployees={allEmployees} isPending={assignPending} onClose={() => setAssignTarget(null)} onSave={(id, employees) => saveAssign({ id, employees })} />}
-
       {completeTarget && <ConfirmCompleteModal project={completeTarget} isPending={completePending} onConfirm={completeProject} onClose={() => setCompleteTarget(null)} />}
-
       {stopTarget && <ConfirmStopModal project={stopTarget} isPending={stopPending} onConfirm={stopProject} onClose={() => setStopTarget(null)} />}
+      {paymentTarget && <PaymentModal project={paymentTarget} isPending={paymentPending || deletePending} onClose={() => setPaymentTarget(null)} onSave={savePayment} onDelete={removePayment} />}
     </div>
   );
 };

@@ -8,7 +8,7 @@ import useToast from "../../hooks/useToast";
 // --- Active User Table ---
 const UserTable = ({ data, columns, onDelete, isLoading, showCompany = false }) => (
   <div className="overflow-x-auto">
-    <table className="w-full text-sm">
+    <table className="w-full text-sm bg-secondary  ">
       <thead>
         <tr className="border-b border-primary/8 text-xs uppercase tracking-wide text-primary/60">
           {columns.map((col) => (
@@ -54,7 +54,7 @@ const UserTable = ({ data, columns, onDelete, isLoading, showCompany = false }) 
 // --- Deleted User Table ---
 const DeletedUserTable = ({ data, isLoading }) => (
   <div className="overflow-x-auto">
-    <table className="w-full text-sm">
+    <table className="w-full text-sm bg-secondary">
       <thead>
         <tr className="border-b border-primary/8 text-xs uppercase tracking-wide text-primary/60">
           <th className="px-5 py-3 text-left font-semibold">Name</th>
@@ -261,29 +261,29 @@ const AllUsers = () => {
       {tab === "active" ? (
         <>
           {/* Employees */}
-          <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-primary/8">
-              <h3 className="text-primary font-semibold text-sm">
-                Employees <span className="text-primary/60">({employees.length})</span>
+          <div className="bg-primary/10 border border-primary/8 rounded-2xl  overflow-hidden">
+            <div className="px-5 py-4 border-b border-primary/8 ">
+              <h3 className="text-primary text-xs sm:text-sm  font-bold uppercase tracking-wide">
+                Employees <span className="text-primary/60 font-mono">({employees.length})</span>
               </h3>
             </div>
             <UserTable data={employees} columns={["Name", "Email"]} onDelete={setDeleteTarget} isLoading={empLoading} showCompany={false} />
           </div>
 
           {/* Clients */}
-          <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-primary/8">
-              <h3 className="text-primary font-semibold text-sm">
-                Clients <span className="text-primary/60">({clients.length})</span>
+          <div className="bg-primary/10 border border-primary/8 rounded-2xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-primary/8 ">
+              <h3 className="text-primary text-xs sm:text-sm  font-bold uppercase tracking-wide">
+                Clients <span className="text-primary/60 font-mono">({clients.length})</span>
               </h3>
             </div>
             <UserTable data={clients} columns={["Name", "Email", "Company"]} onDelete={setDeleteTarget} isLoading={cliLoading} showCompany={true} />
           </div>
         </>
       ) : (
-        <div className="bg-white border border-primary/8 rounded-2xl overflow-hidden">
+        <div className="bg-primary/10 border border-primary/8 rounded-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-primary/8">
-            <h3 className="text-primary font-semibold text-sm">
+            <h3 className="text-primary text-xs sm:text-sm  font-bold uppercase tracking-wide">
               Deleted Users <span className="text-primary/60">({deletedUsers.length})</span>
             </h3>
           </div>

@@ -59,6 +59,7 @@ body {
 }
 button{
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 
@@ -80,4 +81,23 @@ button{
   }
 @keyframes l12 {
   100%  {background-position:100% 0,100% 100%,0 100%,0 0,center}
+}
+
+
+#style-4::-webkit-scrollbar-track
+{
+	background-color: #FFFDF1;
+}
+
+#style-4::-webkit-scrollbar
+{
+	width: 8px;
+	background-color: #FFFDF1;
+}
+
+#style-4::-webkit-scrollbar-thumb
+{
+	background-color: #280905;
+	border: 1px solid #FFFDF1;
+  border-radius: 20px;
 }

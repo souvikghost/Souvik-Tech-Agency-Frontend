@@ -1,5 +1,3 @@
-// all project related API calls
-
 import { delAPI, getAPI, patchAPI } from "../lib/api";
 
 export const getProjects = () => getAPI("/projects");

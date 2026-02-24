@@ -32,7 +32,7 @@ const ServiceCard = ({ service, index, onDelete }) => {
       </div>
 
       {/* Description */}
-      <p className="text-primary/60 text-sm leading-relaxed flex-1">{service.description}</p>
+      <p className="text-primary/40 text-sm font-semibold leading-relaxed flex-1">{service.description}</p>
 
       {/* Footer */}
       <div className="border-t border-primary/8 pt-3 flex items-center justify-between gap-3">
