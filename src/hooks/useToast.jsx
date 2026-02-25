@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { svgPacket } from "../utils/svgPacket";
 
 const toastStyles = {
-  success: "bg-emerald-50 border-emerald-200 text-emerald-700",
-  error:   "bg-red-50 border-red-200 text-red-600",
-  warning: "bg-yellow-50 border-yellow-200 text-yellow-700",
-  info:    "bg-blue-50 border-blue-200 text-blue-700",
+  success: "bg-emerald-100 border-emerald-400 text-emerald-800",
+  error:   "bg-red-100 border-red-400 text-red-800",
+  warning: "bg-yellow-100 border-yellow-400 text-yellow-800",
+  info:    "bg-blue-100 border-blue-400 text-blue-800",
 };
 
 const iconStyles = {
@@ -15,10 +16,10 @@ const iconStyles = {
 };
 
 const icons = {
-  success: "✓",
-  error:   "✕",
-  warning: "⚠",
-  info:    "ℹ",
+  success: svgPacket["successIcon"],
+  error:   svgPacket["errorIcon"],
+  warning: svgPacket["warningIcon"],
+  info:    svgPacket["infoIcon"],
 };
 
 const useToast = () => {
@@ -35,7 +36,7 @@ const useToast = () => {
   const ToastContainer = () => (
     <div className="fixed top-5 right-5 z-[100] flex flex-col gap-2">
       {toasts.map((t) => (
-        <div key={t.id} className={`flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-lg w-72 ${toastStyles[t.type]}`}>
+        <div key={t.id} className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg w-72 ${toastStyles[t.type]}`}>
           <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${iconStyles[t.type]}`}>
             {icons[t.type]}
           </div>

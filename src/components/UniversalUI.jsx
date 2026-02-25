@@ -89,7 +89,7 @@ export default function UniversalUI({ navItems, role }) {
           </div>
 
           {/* Logout */}
-          <button onClick={() => handleLogout()} className="ml-auto text-sm font-semibold px-3 py-1.5 rounded-lg border bg-primary text-secondary transition hover:bg-primary/90">
+          <button onClick={() => handleLogout()} className="ml-auto text-sm font-semibold px-3 py-1.5 rounded-lg border bg-red-600 text-secondary transition hover:bg-red-500">
             Logout
           </button>
         </header>

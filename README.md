@@ -8,6 +8,17 @@
 🔗 **Live Demo:** [https://souviktechagency.vercel.app](https://souviktechagency.vercel.app)  
 🔗 **Backend Repo:** [https://github.com/souvikghost/Souvik-Tech-Agency](https://github.com/souvikghost/Souvik-Tech-Agency)
 
+
+---
+## Infrastructure
+
+| Layer | Platform | Details |
+|-------|----------|---------|
+| Frontend | Vercel | Auto-deployed from GitHub, global CDN |
+| Backend | AWS EC2 | Ubuntu server, running 24/7 with PM2 process manager |
+| Database | MongoDB Atlas | Cloud-hosted, connected to EC2 backend |
+| Media Storage | Cloudinary | Avatar uploads with face-crop transformation |
+| Auth | HTTP-only Cookie + JWT | Secure cross-origin auth between Vercel and EC2 |
 ---
 
 ## Table of Contents
@@ -53,6 +64,9 @@ Souvik Tech Agency is a full-stack management portal with three distinct roles �
 - Mark projects as completed or stopped
 - Messaging with all employees and clients
 - Edit profile name and upload avatar
+- Payment management per project — add, edit, delete payment records (amount, method, status, date, notes)
+- Revenue tracking on dashboard — total collected, partial payments, outstanding amounts
+- Full payment records table on dashboard with project, client, amount, method, status, date
 
 ### Employee
 - View all assigned projects with status
@@ -66,6 +80,7 @@ Souvik Tech Agency is a full-stack management portal with three distinct roles �
 - View approved projects and track their status
 - Message admin and assigned employees
 - Edit profile name and upload avatar
+- View payment status per project (paid, partial, unpaid) with amount and date
 
 ### Shared
 - Polling-based messaging (no WebSocket required)
@@ -73,6 +88,7 @@ Souvik Tech Agency is a full-stack management portal with three distinct roles �
 - Soft delete — deleted users shown with label in records, excluded from messaging
 - Protected routes — unauthenticated users redirected to login, wrong role redirected to own portal
 - Demo Login button on login page for quick access
+- Soft-deleted users blocked from logging in — returns invalid credentials on login attempt
 
 ---
 
@@ -135,7 +151,7 @@ npm run build
 
 ## Project Structure
 
-```
+
 src/
 ├── api/                        # API call functions per feature
 │   ├── auth.js                 # login, logout, getMe
@@ -144,6 +160,7 @@ src/
 │   ├── requests.js             # getRequests, approveRequest, rejectRequest
 │   ├── projects.js             # getProjects, updateStatus, assignEmployees
 │   ├── messages.js             # getConversations, getThread, sendMessage, deleteConversation
+│   ├── payment.js              # getPayments, getPaymentByProject, getPaymentStats, createPayment, updatePayment, deletePayment
 │   └── dashboard.js            # getDashboardStats
 ├── assets/                     # Logos and static assets
 ├── components/
@@ -187,13 +204,11 @@ src/
 ├── App.css
 ├── main.jsx
 └── index.css
-```
 
 ---
 
 ## Screenshots
 
-> Add screenshots here after deployment. Drag and drop images directly into this file on GitHub to upload them automatically.
 ## Admin View
 <img width="1710" height="986" alt="Login" src="https://github.com/user-attachments/assets/a311b96f-2f47-4e7e-ad88-6085c03d8bde" />
 <img width="1710" height="951" alt="Screenshot 2026-02-24 at 8 47 48 PM" src="https://github.com/user-attachments/assets/a1ddb447-99d3-49d6-892b-7e429bfc8ebb" />
@@ -206,19 +221,17 @@ src/
 <img width="1710" height="952" alt="Admin:Projects:Assign" src="https://github.com/user-attachments/assets/c7595fa3-3616-47c4-9ffa-c1b84290c3b7" />
 <img width="1710" height="952" alt="Admin:Profile" src="https://github.com/user-attachments/assets/0a083935-93f0-4352-acbb-690dfa273c6e" />
 <img width="1710" height="950" alt="Admin:Messages History" src="https://github.com/user-attachments/assets/0a8615ab-2897-4b17-a129-17a903280106" />
+---
 
 ## Employee  View
 <img width="1710" height="983" alt="Employee:Projects:Update Status" src="https://github.com/user-attachments/assets/1b366ca5-8cfb-4fb7-a26f-89b7b08e1f0a" />
 <img width="1710" height="983" alt="Employee:Messages" src="https://github.com/user-attachments/assets/dde7d5ac-2b41-4b7d-91ad-3de357a1a575" />
+---
 
 ## Client View
 <img width="1710" height="951" alt="Client:Service:Request" src="https://github.com/user-attachments/assets/f9f6652c-acc0-4b0b-9d9a-c9f3ad9f0841" />
 <img width="1710" height="951" alt="Client:Requests" src="https://github.com/user-attachments/assets/cce6a4c1-fba9-4d43-8a81-c37c52c2ab85" />
 <img width="1710" height="952" alt="image" src="https://github.com/user-attachments/assets/5a5d80d2-eace-45fb-a1bb-b18962d43334" />
-
-
-
-
 
 
 ---
@@ -235,7 +248,6 @@ To deploy your own instance:
    ```
    VITE_API_URL=<your_backend_url>
    ```
-4. Deploy — Vercel auto-builds on every push to main
 
 ---
 
